@@ -1,0 +1,7 @@
+---
+# zookeeper.yml
+- hosts: zookeeper*
+  gather_facts: yes
+  sudo: yes
+  roles:
+    - zookeeper

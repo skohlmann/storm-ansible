@@ -1,0 +1,7 @@
+---
+# supervisor.yml
+- hosts: supervisor*
+  gather_facts: yes
+  sudo: yes
+  roles:
+    - { role: storm, types: ["supervisor"] }

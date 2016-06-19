@@ -1,0 +1,6 @@
+---
+# vars file for zookeeper
+packages:
+  Debian:
+    - zookeeper
+    - zookeeperd

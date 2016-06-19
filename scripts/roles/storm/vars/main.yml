@@ -1,0 +1,7 @@
+---
+# vars file for storm
+storm_name : 'apache-storm-{{ storm_ver }}'
+storm_archive : '{{ storm_name }}.tar.gz'
+storm_url : '{{ storm_mirror }}/{{ storm_name }}/{{ storm_archive }}'
+storm_root : '/usr/lib/apache/storm/'
+storm_home : '{{ storm_root }}/{{ storm_ver }}'

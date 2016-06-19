@@ -1,0 +1,9 @@
+{% for host in groups['all'] -%}
+Host {{ host }}
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+  IdentitiesOnly yes
+  User vagrant
+  IdentityFile /vagrant/.vagrant/machines/{{ host }}/virtualbox/private_key
+  PasswordAuthentication no
+{% endfor -%}

@@ -1,0 +1,7 @@
+---
+# nimbus.yml
+- hosts: all
+  gather_facts: yes
+  sudo: yes
+  roles:
+    - common
