@@ -1,4 +1,0 @@
----
-# tasks file for storm
-- include: install.yml
-- include: config.yml

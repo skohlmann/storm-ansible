@@ -1,7 +1,0 @@
----
-# nimbus.yml
-- hosts: nimbus*
-  gather_facts: yes
-  sudo: yes
-  roles:
-    - { role: storm, types: ["nimbus", "ui"] }

@@ -1,5 +1,0 @@
----
-# tasks file for zookeeper
-- name: install Zookeeper
-  apt: name={{ item }} update_cache=yes state=latest
-  with_items: "{{ packages[ansible_os_family] }}"

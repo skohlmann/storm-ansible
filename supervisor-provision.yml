@@ -1,0 +1,93 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    storm:
+      version: 1.1.1
+      mirror: http://www-us.apache.org/dist
+      user: storm
+      group: root
+      install_dir: /opt
+      data_dir: /opt/storm/data
+      log_dir: /opt/storm/log
+  tasks:
+
+  - name: User | Create Group
+    become_user: root
+    group:
+      name: "{{storm.group}}"
+      state: present
+
+  - name: User | Create User
+    become_user: root
+    user:
+      name: "{{storm.user}}"
+      group: "{{storm.group}}"
+      state: present
+
+  - name: Install add-apt-repostory
+    become: yes
+    apt: name=software-properties-common state=latest
+
+  - name: Add Oracle Java Repository
+    become: yes
+    apt_repository: repo='ppa:webupd8team/java'
+
+  - name: Accept Java 8 License
+    become: yes
+    debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+
+  - name: Install Oracle Java 8
+    become: yes
+    apt: name={{item}} state=latest
+    with_items:
+      - oracle-java8-installer
+      - ca-certificates
+      - oracle-java8-set-default
+
+
+  - name: Supervisor | Create base directory
+    become_user: root
+    file:
+      path: "{{storm.install_dir}}"
+      owner: "root"
+      group: "root"
+      mode: 0755
+      state: directory
+
+  - name: Supervisor | Download
+    get_url:
+      url: http://www-us.apache.org/dist/storm/apache-storm-{{storm.version}}/apache-storm-{{storm.version}}.tar.gz
+      dest: /tmp/apache-storm-{{storm.version}}.tar.gz
+
+  - name: Supervisor | Extract Storm
+    become_user: root
+    command: tar xzf /tmp/apache-storm-{{storm.version}}.tar.gz chdir="{{storm.install_dir}}"
+
+  - name: Supervisor | Create data directory
+    become_user: root
+    file:
+      path: "{{storm.data_dir}}"
+      owner: "{{storm.user}}"
+      group: "{{storm.group}}"
+      mode: 0755
+      state: directory
+
+  - name: Supervisor | Create log directory
+    become_user: root
+    file:
+      path: "{{storm.log_dir}}"
+      owner: "{{storm.user}}"
+      group: "{{storm.group}}"
+      mode: 0755
+      state: directory
+
+  - name: Supervisor | Update permissions
+    become_user: root
+    file:
+      path: "{{ storm.install_dir }}"
+      owner: "{{ storm.user }}"
+      group: "{{ storm.group }}"
+      recurse: yes
+      mode: 0755
+      state: directory
