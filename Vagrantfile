@@ -7,7 +7,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "ubuntu/trusty64"
 
-  memory_mb = 256
+  memory_mb = 1024
 
   cluster = {
     'storm-nimbus-node-1' => "192.168.5.150",

@@ -8,8 +8,8 @@
       user: storm
       group: root
       install_dir: /opt
-      data_dir: /opt/storm/data
-      log_dir: /opt/storm/log
+      base_dir: /opt/storm
+      log_dir: /opt/storm-log
   tasks:
 
   - name: User | Create Group
@@ -45,16 +45,7 @@
       - ca-certificates
       - oracle-java8-set-default
 
-  - name: Nimbus | Create base directory
-    become_user: root
-    file:
-      path: "{{storm.install_dir}}"
-      owner: "root"
-      group: "root"
-      mode: 0755
-      state: directory
-
-  - name: Nimbus | Download
+  - name: Nimbus | Download Storm
     get_url:
       url: http://www-us.apache.org/dist/storm/apache-storm-{{storm.version}}/apache-storm-{{storm.version}}.tar.gz
       dest: /tmp/apache-storm-{{storm.version}}.tar.gz
@@ -62,24 +53,6 @@
   - name: Nimbus | Extract Storm
     become_user: root
     command: tar xzf /tmp/apache-storm-{{storm.version}}.tar.gz chdir="{{storm.install_dir}}"
-
-  - name: Nimbus | Create data directory
-    become_user: root
-    file:
-      path: "{{storm.data_dir}}"
-      owner: "{{storm.user}}"
-      group: "{{storm.group}}"
-      mode: 0755
-      state: directory
-
-  - name: Nimbus | Create log directory
-    become_user: root
-    file:
-      path: "{{storm.log_dir}}"
-      owner: "{{storm.user}}"
-      group: "{{storm.group}}"
-      mode: 0755
-      state: directory
 
   - name: Nimbus | Update permissions
     become_user: root
@@ -90,3 +63,64 @@
       recurse: yes
       mode: 0755
       state: directory
+
+  - name: Nimbus | Create base directory
+    become_user: root
+    file:
+      path: "{{storm.base_dir}}"
+      owner: "{{storm.user}}"
+      group: "{{storm.group}}"
+      mode: 0777
+      state: directory
+
+  - name: Nimbus | Create log directory
+    become_user: root
+    file:
+      path: "{{storm.log_dir}}"
+      owner: "{{storm.user}}"
+      group: "{{storm.group}}"
+      mode: 0777
+      state: directory
+
+  - name: Nimbus | Update base permissions
+    become_user: root
+    file:
+      path: "{{ storm.base_dir }}"
+      owner: "{{ storm.user }}"
+      group: "{{ storm.group }}"
+      recurse: yes
+      mode: 0777
+      state: directory
+
+  - name: Nimbus | Update log permissions
+    become_user: root
+    file:
+      path: "{{ storm.log_dir }}"
+      owner: "{{ storm.user }}"
+      group: "{{ storm.group }}"
+      recurse: yes
+      mode: 0777
+      state: directory
+
+  - name: Nimbus | Set config
+    template:
+      src: "templates/nimbus/storm.yaml"
+      dest: "{{storm.install_dir}}/apache-storm-{{ storm.version }}/conf/"
+
+#  - name: Nimbus | Set init.d environment
+#    template:
+#      src: "templates/nimbus/nimbus"
+#      dest: "/etc/init.d/"
+#      mode: 0755
+
+#  - name: Nimbus | Configure autostart
+#    file:
+#      src: /etc/init.d/nimbus
+#      dest: /etc/rc2.d/S99nimbus
+#      state: link
+
+#  - name: Nimbus | Run service
+#    service: name=nimbus state=started enabled=yes
+#  - name: Nimbus | Run service
+#    shell: "{{storm.install_dir}}/apache-storm-{{storm.version}}/bin/storm nimbus &"
+
