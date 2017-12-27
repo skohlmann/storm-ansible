@@ -82,26 +82,6 @@
       mode: 0777
       state: directory
 
-  - name: Nimbus | Update base permissions
-    become_user: root
-    file:
-      path: "{{ storm.base_dir }}"
-      owner: "{{ storm.user }}"
-      group: "{{ storm.group }}"
-      recurse: yes
-      mode: 0777
-      state: directory
-
-  - name: Nimbus | Update log permissions
-    become_user: root
-    file:
-      path: "{{ storm.log_dir }}"
-      owner: "{{ storm.user }}"
-      group: "{{ storm.group }}"
-      recurse: yes
-      mode: 0777
-      state: directory
-
   - name: Nimbus | Set config
     template:
       src: "templates/nimbus/storm.yaml"
@@ -121,6 +101,12 @@
 
 #  - name: Nimbus | Run service
 #    service: name=nimbus state=started enabled=yes
-#  - name: Nimbus | Run service
-#    shell: "{{storm.install_dir}}/apache-storm-{{storm.version}}/bin/storm nimbus &"
+
+  - name: Nimbus | Run Nimbus
+    shell: ./storm nimbus &
+    become: true
+    become_user: root
+    args:
+      chdir: "{{storm.install_dir}}/apache-storm-{{storm.version}}/bin/"
+      executable: /bin/bash
 

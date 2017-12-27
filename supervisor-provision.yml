@@ -9,59 +9,21 @@
       group: root
       install_dir: /opt
       base_dir: /opt/storm
-      log_dir: /opt/storm/log
+      log_dir: /opt/storm-log
   tasks:
 
-  - name: User | Create Group
+  - name: Supervisor | Create Group
     become_user: root
     group:
       name: "{{storm.group}}"
       state: present
 
-  - name: User | Create User
+  - name: Supervisor | Create User
     become_user: root
     user:
       name: "{{storm.user}}"
       group: "{{storm.group}}"
       state: present
-
-  - name: Nimbus | Create base directory
-    become_user: root
-    file:
-      path: "{{storm.base_dir}}"
-      owner: "{{storm.user}}"
-      group: "{{storm.group}}"
-      mode: 0777
-      state: directory
-
-  - name: Nimbus | Create log directory
-    become_user: root
-    file:
-      path: "{{storm.log_dir}}"
-      owner: "{{storm.user}}"
-      group: "{{storm.group}}"
-      mode: 0777
-      state: directory
-
-  - name: Nimbus | Update base permissions
-    become_user: root
-    file:
-      path: "{{ storm.base_dir }}"
-      owner: "{{ storm.user }}"
-      group: "{{ storm.group }}"
-      recurse: yes
-      mode: 0777
-      state: directory
-
-  - name: Nimbus | Update log permissions
-    become_user: root
-    file:
-      path: "{{ storm.log_dir }}"
-      owner: "{{ storm.user }}"
-      group: "{{ storm.group }}"
-      recurse: yes
-      mode: 0777
-      state: directory
 
   - name: Install add-apt-repostory
     become: yes
@@ -92,51 +54,21 @@
     become_user: root
     command: tar xzf /tmp/apache-storm-{{storm.version}}.tar.gz chdir="{{storm.install_dir}}"
 
-  - name: Nimbus | Create base directory
+  - name: Supervisor | Create base directory
     become_user: root
     file:
       path: "{{storm.base_dir}}"
       owner: "{{storm.user}}"
       group: "{{storm.group}}"
-      mode: 0777
+      mode: 0755
       state: directory
 
-  - name: Nimbus | Create log directory
+  - name: Supervisor | Create log directory
     become_user: root
     file:
       path: "{{storm.log_dir}}"
       owner: "{{storm.user}}"
       group: "{{storm.group}}"
-      mode: 0777
-      state: directory
-
-  - name: Nimbus | Update base permissions
-    become_user: root
-    file:
-      path: "{{ storm.base_dir }}"
-      owner: "{{ storm.user }}"
-      group: "{{ storm.group }}"
-      recurse: yes
-      mode: 0777
-      state: directory
-
-  - name: Nimbus | Update log permissions
-    become_user: root
-    file:
-      path: "{{ storm.log_dir }}"
-      owner: "{{ storm.user }}"
-      group: "{{ storm.group }}"
-      recurse: yes
-      mode: 0777
-      state: directory
-
-  - name: Supervisor | Update permissions
-    become_user: root
-    file:
-      path: "{{ storm.install_dir }}"
-      owner: "{{ storm.user }}"
-      group: "{{ storm.group }}"
-      recurse: yes
       mode: 0755
       state: directory
 
@@ -157,5 +89,7 @@
 #      dest: /etc/rc2.d/S99supervisor
 #      state: link
 
-#  - name: Supervisor | Run service
-#    shell: "{{storm.install_dir}}/apache-storm-{{storm.version}}/bin/storm &"
+  - name: Supervisor | Run Supervisor
+    shell: "{{storm.install_dir}}/apache-storm-{{storm.version}}/bin/storm supervisor &"
+    become: true
+    become_user: root
